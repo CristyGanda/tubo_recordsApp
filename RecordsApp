@@ -1,0 +1,60 @@
+<?php
+include_once("../../db.php");
+require ('vendor/autoload.php');
+
+$faker = Faker\Factory::create('en_PH');
+
+$database = new Database();
+$connection = $database->getConnection();
+
+$data = array();
+
+// generate 15 records
+for ($i = 1; $i <= 200; $i++) {
+    array_push($data, $faker->unique()->employee);
+}
+print_r($data);
+
+for ($i = 1; $i <= 50; $i++) {
+    $officeData[] = [
+        'id' => $i,
+        'name' => $faker->company,
+        'contactnum' => $faker->phoneNumber,
+        'email' => $faker->email,
+        'address' => $faker->streetAddress,
+        'city' => $faker->city,
+        'country' => $faker->country,
+        'postal' => $faker->postcode,
+    ];
+}
+for ($i = 1; $i <= 500; $i++) {
+    $transactionData[] = [
+        'id' => $i,
+        'employee_id' => $faker->numberBetween(1, 100), // Adjust the range as per your employee IDs
+        'office_id' => $faker->numberBetween(1, 50), // Adjust the range as per your office IDs
+        'datelog' => $faker->dateTimeThisYear->format('Y-m-d H:i:s'),
+        'action' => $faker->randomElement(['Created', 'Updated', 'Deleted', 'Approved']),
+        'remarks' => $faker->sentence,
+        'documentcode' => $faker->unique()->ean13, // Assuming you want unique document codes
+    ];
+}
+$conn->query($insertEmployee);
+
+for ($k = 1; $k <= 10; $k++) {
+    $transaction_id = ($i - 1) * 10 + ($j - 1) * 10 + $k;
+    $datelog = randomDate('2023-01-01', '2023-12-31');
+    $action = "Action $transaction_id";
+    $remarks = "Remarks $transaction_id";
+    $documentcode = "Document Code $transaction_id";
+
+    $insertTransaction = "INSERT INTO Transaction (id, employee_id, office_id, datelog, action, remarks, documentcode)
+                    VALUES ('$transaction_id', '$employee_id', '$office_id', '$datelog', '$action', '$remarks', '$documentcode')";
+
+    $conn->query($insertTransaction);
+}
+}
+}
+
+// Close the database connection
+$conn->close();
+?>
