@@ -1,0 +1,84 @@
+CREATE TABLE employees (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    office_id INT,
+    salary DECIMAL(10, 2),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE offices (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL
+);
+You sent
+<?php
+$servername = "your_server";
+$username = "your_username";
+$password = "your_password";
+$dbname = "your_db_name";
+
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+You sent
+<?php
+require_once "vendor/autoload.php";
+require_once "db.php";
+
+$faker = Faker\Factory::create();
+
+// Generate Offices
+for ($i = 0; $i < 5; $i++) {
+    $officeName = $faker->company;
+    $conn->query("INSERT INTO offices (name) VALUES ('$officeName')");
+}
+
+// Generate Employees
+for ($i = 0; $i < 50; $i++) {
+    $employeeName = $faker->name;
+    $officeId = $faker->numberBetween(1, 5);
+    $salary = $faker->randomFloat(2, 30000, 90000);
+    $conn->query("INSERT INTO employees (name, office_id, salary) VALUES ('$employeeName', $officeId, $salary)");
+}
+
+echo "Fake data generated successfully!";
+You sent
+<?php
+require_once "db.php";
+
+// Pagination
+$results_per_page = 10;
+$total_results = $conn->query("SELECT COUNT(*) FROM employees")->fetch_row()[0];
+$total_pages = ceil($total_results / $results_per_page);
+
+if (!isset($_GET['page'])) {
+    $page = 1;
+} else {
+    $page = $_GET['page'];
+}
+
+$start_limit = ($page - 1) * $results_per_page;
+
+// Fetch Employees
+$result = $conn->query("SELECT employees.id, employees.name, employees.salary, offices.name as office_name
+                        FROM employees
+                        JOIN offices ON employees.office_id = offices.id
+                        LIMIT $start_limit, $results_per_page");
+
+// Display Data
+while ($row = $result->fetch_assoc()) {
+    echo "ID: " . $row['id'] . " | Name: " . $row['name'] . " | Salary: $" . $row['salary'] . " | Office: " . $row['office_name'] . "<br>";
+    // Add Edit and Delete links here
+}
+
+// Pagination Links
+for ($page = 1; $page <= $total_pages; $page++) {
+    echo "<a href='index.php?page=$page'>$page</a> ";
+}
+Sent
+Write to Cris Tyy
+
+
